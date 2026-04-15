@@ -9,6 +9,7 @@ export default function Home() {
   const [description, setDescription] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [message, setMessage] = useState("");
+  const [slug, setSlug] = useState("");
 
   const fetchProfiles = async () => {
     const { data, error } = await supabase
@@ -30,6 +31,8 @@ export default function Home() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    const generatedSlug = businessName.toLowerCase().trim();
+
     const { error } = await supabase.from("profiles").insert([
       {
         business_name: businessName,
@@ -42,6 +45,7 @@ export default function Home() {
       console.error(error);
       setMessage("Error al guardar");
     } else {
+      setSlug(generatedSlug);
       setMessage("Guardado correctamente ✅");
       setBusinessName("");
       setDescription("");
@@ -87,25 +91,62 @@ export default function Home() {
         <button type="submit">Crear mi página</button>
 
         {message && <p>{message}</p>}
+
+        {slug && (
+          <a
+            href={`/negocio/${slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              marginTop: "10px",
+              padding: "10px 14px",
+              background: "black",
+              color: "white",
+              borderRadius: "8px",
+              textDecoration: "none",
+              width: "fit-content",
+            }}
+          >
+            Ver mi página 🚀
+          </a>
+        )}
       </form>
 
       <h2 style={{ marginTop: "40px" }}>Perfiles creados</h2>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {profiles.map((p) => (
-          <div
-            key={p.id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "10px",
-              borderRadius: "8px",
-            }}
-          >
-            <strong>{p.business_name}</strong>
-            <p>{p.description}</p>
-            <p>📱 {p.whatsapp}</p>
-          </div>
-        ))}
+  <div
+    key={p.id}
+    style={{
+      border: "1px solid #ccc",
+      padding: "10px",
+      borderRadius: "8px",
+    }}
+  >
+      <strong>{p.business_name}</strong>
+      <p>{p.description}</p>
+      <p>📱 {p.whatsapp}</p>
+
+      <a
+        href={`/negocio/${p.business_name.toLowerCase().trim()}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          display: "inline-block",
+          marginTop: "10px",
+          padding: "8px 12px",
+          background: "black",
+          color: "white",
+          borderRadius: "8px",
+          textDecoration: "none",
+        }}
+      >
+        Ver mi página 🚀
+      </a>
+    </div>
+))}
       </div>
     </main>
   );
