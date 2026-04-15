@@ -5,12 +5,19 @@ import { QRCodeCanvas } from "qrcode.react";
 import { supabase } from "@/lib/supabase";
 
 export default function Home() {
+  const [siteUrl, setSiteUrl] = useState("");
   const [profiles, setProfiles] = useState<any[]>([]);
   const [businessName, setBusinessName] = useState("");
   const [description, setDescription] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [message, setMessage] = useState("");
   const [slug, setSlug] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSiteUrl(window.location.origin);
+    }
+  }, []);
 
   const fetchProfiles = async () => {
     const { data, error } = await supabase
@@ -180,7 +187,7 @@ export default function Home() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
             {profiles.map((p) => {
-              const publicUrl = `http://localhost:3000/negocio/${p.slug}`;
+              const publicUrl = `${siteUrl}/negocio/${p.slug}`;
 
               return (
                 <div
@@ -249,7 +256,7 @@ export default function Home() {
                       }}
                     >
                       <p style={{ marginTop: 0, marginBottom: "10px" }}>QR del negocio</p>
-                      <QRCodeCanvas value={publicUrl} size={120} />
+                      {siteUrl && <QRCodeCanvas value={publicUrl} size={120} />}
                     </div>
                   </div>
                 </div>
