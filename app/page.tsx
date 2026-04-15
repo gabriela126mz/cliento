@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { QRCodeCanvas } from "qrcode.react";
 import { supabase } from "@/lib/supabase";
 
 export default function Home() {
@@ -178,55 +179,82 @@ export default function Home() {
           <p style={{ color: "#666" }}>Todavía no has creado negocios.</p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-            {profiles.map((p) => (
-              <div
-                key={p.id}
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "12px",
-                  padding: "16px",
-                }}
-              >
-                <strong style={{ fontSize: "18px" }}>{p.business_name}</strong>
-                <p style={{ margin: "8px 0" }}>{p.description}</p>
-                <p style={{ margin: "8px 0" }}>📱 {p.whatsapp}</p>
-                <p style={{ margin: "8px 0", color: "#666" }}>
-                  Enlace: /negocio/{p.slug}
-                </p>
+            {profiles.map((p) => {
+              const publicUrl = `http://localhost:3000/negocio/${p.slug}`;
 
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                  <a
-                    href={`/negocio/${p.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+              return (
+                <div
+                  key={p.id}
+                  style={{
+                    border: "1px solid #ddd",
+                    borderRadius: "12px",
+                    padding: "16px",
+                  }}
+                >
+                  <strong style={{ fontSize: "18px" }}>{p.business_name}</strong>
+                  <p style={{ margin: "8px 0" }}>{p.description}</p>
+                  <p style={{ margin: "8px 0" }}>📱 {p.whatsapp}</p>
+                  <p style={{ margin: "8px 0", color: "#666" }}>
+                    Enlace: /negocio/{p.slug}
+                  </p>
+
+                  <div
                     style={{
-                      display: "inline-block",
-                      padding: "10px 14px",
-                      background: "black",
-                      color: "white",
-                      borderRadius: "8px",
-                      textDecoration: "none",
+                      display: "flex",
+                      gap: "18px",
+                      flexWrap: "wrap",
+                      alignItems: "flex-start",
+                      marginTop: "14px",
                     }}
                   >
-                    Ver web 🚀
-                  </a>
+                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                      <a
+                        href={`/negocio/${p.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "inline-block",
+                          padding: "10px 14px",
+                          background: "black",
+                          color: "white",
+                          borderRadius: "8px",
+                          textDecoration: "none",
+                        }}
+                      >
+                        Ver web 🚀
+                      </a>
 
-                  <a
-                    href={`/dashboard/${p.slug}`}
-                    style={{
-                      display: "inline-block",
-                      padding: "10px 14px",
-                      background: "blue",
-                      color: "white",
-                      borderRadius: "8px",
-                      textDecoration: "none",
-                    }}
-                  >
-                    Editar ⚙️
-                  </a>
+                      <a
+                        href={`/dashboard/${p.slug}`}
+                        style={{
+                          display: "inline-block",
+                          padding: "10px 14px",
+                          background: "blue",
+                          color: "white",
+                          borderRadius: "8px",
+                          textDecoration: "none",
+                        }}
+                      >
+                        Editar ⚙️
+                      </a>
+                    </div>
+
+                    <div
+                      style={{
+                        border: "1px solid #eee",
+                        borderRadius: "10px",
+                        padding: "12px",
+                        textAlign: "center",
+                        background: "#fafafa",
+                      }}
+                    >
+                      <p style={{ marginTop: 0, marginBottom: "10px" }}>QR del negocio</p>
+                      <QRCodeCanvas value={publicUrl} size={120} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
