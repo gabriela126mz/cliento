@@ -10,7 +10,7 @@ export default async function Page({
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
-    .eq("business_name", slug)
+    .eq("slug", slug)
     .single();
 
   if (error || !data) {

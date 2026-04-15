@@ -31,13 +31,17 @@ export default function Home() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    const generatedSlug = businessName.toLowerCase().trim();
+    const generatedSlug = businessName
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "-");
 
     const { error } = await supabase.from("profiles").insert([
       {
         business_name: businessName,
         description: description,
         whatsapp: whatsapp,
+        slug: generatedSlug,
       },
     ]);
 
@@ -105,7 +109,6 @@ export default function Home() {
               color: "white",
               borderRadius: "8px",
               textDecoration: "none",
-              width: "fit-content",
             }}
           >
             Ver mi página 🚀
@@ -117,36 +120,36 @@ export default function Home() {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {profiles.map((p) => (
-  <div
-    key={p.id}
-    style={{
-      border: "1px solid #ccc",
-      padding: "10px",
-      borderRadius: "8px",
-    }}
-  >
-      <strong>{p.business_name}</strong>
-      <p>{p.description}</p>
-      <p>📱 {p.whatsapp}</p>
+          <div
+            key={p.id}
+            style={{
+              border: "1px solid #ccc",
+              padding: "10px",
+              borderRadius: "8px",
+            }}
+          >
+            <strong>{p.business_name}</strong>
+            <p>{p.description}</p>
+            <p>📱 {p.whatsapp}</p>
 
-      <a
-        href={`/negocio/${p.business_name.toLowerCase().trim()}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          display: "inline-block",
-          marginTop: "10px",
-          padding: "8px 12px",
-          background: "black",
-          color: "white",
-          borderRadius: "8px",
-          textDecoration: "none",
-        }}
-      >
-        Ver mi página 🚀
-      </a>
-    </div>
-))}
+            <a
+              href={`/negocio/${p.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                marginTop: "10px",
+                padding: "8px 12px",
+                background: "black",
+                color: "white",
+                borderRadius: "8px",
+                textDecoration: "none",
+              }}
+            >
+              Ver mi página 🚀
+            </a>
+          </div>
+        ))}
       </div>
     </main>
   );
