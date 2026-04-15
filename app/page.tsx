@@ -97,22 +97,37 @@ export default function Home() {
         {message && <p>{message}</p>}
 
         {slug && (
-          <a
-            href={`/negocio/${slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-block",
-              marginTop: "10px",
-              padding: "10px 14px",
-              background: "black",
-              color: "white",
-              borderRadius: "8px",
-              textDecoration: "none",
-            }}
-          >
-            Ver mi página 🚀
-          </a>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            <a
+              href={`/negocio/${slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "10px 14px",
+                background: "black",
+                color: "white",
+                borderRadius: "8px",
+                textDecoration: "none",
+              }}
+            >
+              Ver mi página 🚀
+            </a>
+
+            <a
+              href={`/dashboard/${slug}`}
+              style={{
+                display: "inline-block",
+                padding: "10px 14px",
+                background: "blue",
+                color: "white",
+                borderRadius: "8px",
+                textDecoration: "none",
+              }}
+            >
+              Editar ⚙️
+            </a>
+          </div>
         )}
       </form>
 
@@ -132,22 +147,37 @@ export default function Home() {
             <p>{p.description}</p>
             <p>📱 {p.whatsapp}</p>
 
-            <a
-              href={`/negocio/${p.slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-block",
-                marginTop: "10px",
-                padding: "8px 12px",
-                background: "black",
-                color: "white",
-                borderRadius: "8px",
-                textDecoration: "none",
-              }}
-            >
-              Ver mi página 🚀
-            </a>
+            <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+              <a
+                href={`/negocio/${p.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-block",
+                  padding: "8px 12px",
+                  background: "black",
+                  color: "white",
+                  borderRadius: "8px",
+                  textDecoration: "none",
+                }}
+              >
+                Ver mi página 🚀
+              </a>
+
+              <a
+                href={`/dashboard/${p.slug}`}
+                style={{
+                  display: "inline-block",
+                  padding: "8px 12px",
+                  background: "blue",
+                  color: "white",
+                  borderRadius: "8px",
+                  textDecoration: "none",
+                }}
+              >
+                Editar ⚙️
+              </a>
+            </div>
           </div>
         ))}
       </div>
