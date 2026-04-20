@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Login() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function Login() {
     });
 
     if (error) {
-      alert(error.message);
+      alert("Login incorrecto");
       return;
     }
 
@@ -42,7 +43,7 @@ export default function Login() {
     <div style={{ maxWidth: 400, margin: "0 auto" }}>
       <h1>Login</h1>
 
-      <form onSubmit={login}>
+      <form onSubmit={login} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <input
           placeholder="email"
           value={email}
@@ -51,12 +52,33 @@ export default function Login() {
 
         <input
           type="password"
+          placeholder="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button>Entrar</button>
+        <button type="submit">Entrar</button>
       </form>
+
+      {/* 🔥 BOTÓN REGISTRO */}
+      <div style={{ marginTop: 20 }}>
+        <p>¿No tienes cuenta?</p>
+
+        <Link href="/register">
+          <button
+            style={{
+              background: "black",
+              color: "white",
+              padding: "10px 14px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              border: "none",
+            }}
+          >
+            Regístrate
+          </button>
+        </Link>
+      </div>
     </div>
   );
 }
