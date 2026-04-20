@@ -1,97 +1,66 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase"
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [user, setUser] = useState(null)
+  const [businessName, setBusinessName] = useState("");
+  const [description, setDescription] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
 
-  const [form, setForm] = useState({
-    business_name: "",
-    description: "",
-    whatsapp: ""
-  })
+  const save = async (e) => {
+    e.preventDefault();
 
-  const [loading, setLoading] = useState(false)
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getUser()
-
-      if (!data.user) {
-        router.push("/login")
-      } else {
-        setUser(data.user)
-      }
-    }
-
-    checkUser()
-  }, [])
-
-  const slugify = (text) =>
-    text
+    const slug = businessName
       .toLowerCase()
       .trim()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
+      .replace(/\s+/g, "-");
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
-
-  const submit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-
-    const slug = slugify(form.business_name)
-
-    const { data, error } = await supabase
+    await supabase
       .from("profiles")
-      .insert({
-        business_name: form.business_name,
-        description: form.description,
-        whatsapp: form.whatsapp,
+      .update({
+        business_name: businessName,
+        description,
+        whatsapp,
         slug,
-        user_id: user.id
       })
-      .select()
-      .single()
+      .eq("auth_id", user.id);
 
-    setLoading(false)
-
-    if (error) {
-      alert(error.message)
-      return
-    }
-
-    router.push(`/${data.slug}`)
-  }
+    router.replace(`/dashboard/${slug}`);
+  };
 
   return (
     <div style={{ maxWidth: 500, margin: "0 auto" }}>
-      {user && (
-        <div style={{ marginBottom: 15 }}>
-          <h3>👋 Bienvenido de nuevo</h3>
-          <p>Gestiona tus clientes aquí</p>
-        </div>
-      )}
+      <h1>Crear negocio</h1>
 
-      <h1>Dashboard</h1>
+      <form onSubmit={save}>
+        <input
+          placeholder="Nombre"
+          value={businessName}
+          onChange={(e) => setBusinessName(e.target.value)}
+        />
 
-      <form onSubmit={submit}>
-        <input name="business_name" placeholder="Nombre" onChange={handleChange} />
-        <input name="description" placeholder="Descripción" onChange={handleChange} />
-        <input name="whatsapp" placeholder="WhatsApp" onChange={handleChange} />
+        <input
+          placeholder="Descripción"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-        <button disabled={loading}>
-          {loading ? "Guardando..." : "Guardar"}
-        </button>
+        <input
+          placeholder="WhatsApp"
+          value={whatsapp}
+          onChange={(e) => setWhatsapp(e.target.value)}
+        />
+
+        <button>Guardar</button>
       </form>
     </div>
-  )
+  );
 }

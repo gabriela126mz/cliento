@@ -15,7 +15,7 @@ export default function Page() {
         .from("profiles")
         .select("*")
         .eq("slug", slug)
-        .single();
+        .maybeSingle();
 
       setProfile(data);
     };
@@ -27,9 +27,7 @@ export default function Page() {
 
   return (
     <div style={{ maxWidth: 500, margin: "0 auto" }}>
-      <h1>Tu negocio</h1>
-
-      <p>{profile.business_name}</p>
+      <h1>{profile.business_name}</h1>
       <p>{profile.description}</p>
       <p>{profile.whatsapp}</p>
     </div>

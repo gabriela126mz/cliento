@@ -1,60 +1,51 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { createClient } from "@supabase/supabase-js"
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (loading) return
-
-    setLoading(true)
-    setError(null)
+  const register = async (e) => {
+    e.preventDefault();
 
     const { data, error } = await supabase.auth.signUp({
       email,
-      password
-    })
+      password,
+    });
 
     if (error) {
-      setError(error.message)
-      setLoading(false)
-      return
+      alert(error.message);
+      return;
     }
 
-    // 🔥 IMPORTANTE: no dependas de session
-    const user = data?.user
+    const user = data.user;
 
-    if (!user) {
-      setError("Usuario no creado")
-      setLoading(false)
-      return
-    }
+    // 🔥 crear profile vacío
+    await supabase.from("profiles").insert([
+      {
+        auth_id: user.id,
+        business_name: "",
+        description: "",
+        whatsapp: "",
+        slug: "",
+      },
+    ]);
 
-    // ir directo al dashboard SIEMPRE
-    router.push("/dashboard")
-  }
+    // 🚀 ir al dashboard (NO login)
+    router.replace("/dashboard");
+  };
 
   return (
-    <div>
-      <h1>Crear cuenta</h1>
+    <div style={{ maxWidth: 400, margin: "0 auto" }}>
+      <h1>Registro</h1>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={register}>
         <input
-          type="email"
           placeholder="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -67,12 +58,8 @@ export default function Register() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button disabled={loading}>
-          {loading ? "Creando..." : "Crear cuenta"}
-        </button>
+        <button>Crear cuenta</button>
       </form>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
-  )
+  );
 }
