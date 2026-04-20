@@ -8,7 +8,6 @@ import { QRCodeCanvas } from "qrcode.react"
 
 export default function Page() {
   const { slug } = useParams()
-
   const [profile, setProfile] = useState(null)
 
   useEffect(() => {
@@ -37,13 +36,11 @@ export default function Page() {
 
       <h3>📱 QR</h3>
 
-      <QRCodeCanvas
-        value={`https://cliento-blue.vercel.app/${profile.slug}`}
-      />
+      <QRCodeCanvas value={`https://cliento-blue.vercel.app/${profile.slug}`} />
 
       <div style={{ marginTop: 20 }}>
         <Link href={`/${profile.slug}/edit`}>
-          <button>✏️ Editar</button>
+          <button>✏️ Editar negocio</button>
         </Link>
       </div>
     </div>

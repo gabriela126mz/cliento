@@ -7,12 +7,14 @@ import { supabase } from "@/lib/supabase"
 export default function Dashboard() {
   const router = useRouter()
 
-  const [business_name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [whatsapp, setWhatsapp] = useState("")
+  const [form, setForm] = useState({
+    business_name: "",
+    description: "",
+    whatsapp: ""
+  })
+
   const [loading, setLoading] = useState(false)
 
-  // 🔥 SLUG AUTOMÁTICO (ESTO ES LO IMPORTANTE)
   const slugify = (text) =>
     text
       .toLowerCase()
@@ -22,18 +24,22 @@ export default function Dashboard() {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
 
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
-    const slug = slugify(business_name)
+    const slug = slugify(form.business_name)
 
     const { data, error } = await supabase
       .from("profiles")
       .insert({
-        business_name,
-        description,
-        whatsapp,
+        business_name: form.business_name,
+        description: form.description,
+        whatsapp: form.whatsapp,
         slug
       })
       .select()
@@ -55,21 +61,24 @@ export default function Dashboard() {
 
       <form onSubmit={handleSubmit}>
         <input
-          placeholder="Nombre negocio"
-          value={business_name}
-          onChange={(e) => setName(e.target.value)}
+          name="business_name"
+          placeholder="Nombre"
+          value={form.business_name}
+          onChange={handleChange}
         />
 
         <input
+          name="description"
           placeholder="Descripción"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={form.description}
+          onChange={handleChange}
         />
 
         <input
+          name="whatsapp"
           placeholder="WhatsApp"
-          value={whatsapp}
-          onChange={(e) => setWhatsapp(e.target.value)}
+          value={form.whatsapp}
+          onChange={handleChange}
         />
 
         <button disabled={loading}>

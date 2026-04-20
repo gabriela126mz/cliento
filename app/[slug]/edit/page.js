@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 
-export default function Edit() {
+export default function EditPage() {
   const { slug } = useParams()
   const router = useRouter()
 
@@ -41,12 +41,21 @@ export default function Edit() {
   const save = async (e) => {
     e.preventDefault()
 
-    await supabase
+    const { error } = await supabase
       .from("profiles")
-      .update(form)
+      .update({
+        business_name: form.business_name,
+        description: form.description,
+        whatsapp: form.whatsapp
+      })
       .eq("slug", slug)
 
-    router.push(`/${slug}`)
+    if (error) {
+      alert(error.message)
+      return
+    }
+
+    router.replace(`/${slug}`)
   }
 
   return (
