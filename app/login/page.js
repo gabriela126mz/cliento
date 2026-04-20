@@ -1,15 +1,18 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
-import { useRouter } from 'next/navigation'
+import { useState } from "react"
+import { supabase } from "@/lib/supabase"
+import { useRouter } from "next/navigation"
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const router = useRouter()
 
-  const handleLogin = async () => {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  const login = async (e) => {
+    e.preventDefault()
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -20,33 +23,31 @@ export default function Login() {
       return
     }
 
-    router.push('/dashboard')
+    alert("👋 Bienvenido de nuevo")
+
+    router.push("/dashboard")
   }
 
   return (
-    <div style={{ padding: 40 }}>
-      <h1>Entrar</h1>
+    <div style={{ maxWidth: 400, margin: "0 auto" }}>
+      <h1>Login</h1>
 
-      <input
-        placeholder="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <form onSubmit={login}>
+        <input
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <input
-        type="password"
-        placeholder="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      <button onClick={handleLogin}>
-        Entrar
-      </button>
-
-      <p>
-        ¿No tienes cuenta? <a href="/register">Regístrate</a>
-      </p>
+        <button>Entrar</button>
+      </form>
     </div>
   )
 }

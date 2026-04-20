@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 
 export default function Dashboard() {
   const router = useRouter()
+
+  const [user, setUser] = useState(null)
 
   const [form, setForm] = useState({
     business_name: "",
@@ -14,6 +16,20 @@ export default function Dashboard() {
   })
 
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getUser()
+
+      if (!data.user) {
+        router.push("/login")
+      } else {
+        setUser(data.user)
+      }
+    }
+
+    checkUser()
+  }, [])
 
   const slugify = (text) =>
     text
@@ -28,7 +44,7 @@ export default function Dashboard() {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
@@ -40,7 +56,8 @@ export default function Dashboard() {
         business_name: form.business_name,
         description: form.description,
         whatsapp: form.whatsapp,
-        slug
+        slug,
+        user_id: user.id
       })
       .select()
       .single()
@@ -57,29 +74,19 @@ export default function Dashboard() {
 
   return (
     <div style={{ maxWidth: 500, margin: "0 auto" }}>
+      {user && (
+        <div style={{ marginBottom: 15 }}>
+          <h3>👋 Bienvenido de nuevo</h3>
+          <p>Gestiona tus clientes aquí</p>
+        </div>
+      )}
+
       <h1>Dashboard</h1>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          name="business_name"
-          placeholder="Nombre"
-          value={form.business_name}
-          onChange={handleChange}
-        />
-
-        <input
-          name="description"
-          placeholder="Descripción"
-          value={form.description}
-          onChange={handleChange}
-        />
-
-        <input
-          name="whatsapp"
-          placeholder="WhatsApp"
-          value={form.whatsapp}
-          onChange={handleChange}
-        />
+      <form onSubmit={submit}>
+        <input name="business_name" placeholder="Nombre" onChange={handleChange} />
+        <input name="description" placeholder="Descripción" onChange={handleChange} />
+        <input name="whatsapp" placeholder="WhatsApp" onChange={handleChange} />
 
         <button disabled={loading}>
           {loading ? "Guardando..." : "Guardar"}

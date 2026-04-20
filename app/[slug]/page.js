@@ -1,21 +1,31 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import Link from "next/link"
 import { QRCodeCanvas } from "qrcode.react"
 
 export default function Page() {
   const { slug } = useParams()
+  const router = useRouter()
+
   const [profile, setProfile] = useState(null)
 
   useEffect(() => {
     const load = async () => {
+      const { data: userData } = await supabase.auth.getUser()
+
+      if (!userData.user) {
+        router.push("/login")
+        return
+      }
+
       const { data } = await supabase
         .from("profiles")
         .select("*")
         .eq("slug", slug)
+        .eq("user_id", userData.user.id)
         .single()
 
       setProfile(data)
@@ -40,7 +50,7 @@ export default function Page() {
 
       <div style={{ marginTop: 20 }}>
         <Link href={`/${profile.slug}/edit`}>
-          <button>✏️ Editar negocio</button>
+          <button>✏️ Editar</button>
         </Link>
       </div>
     </div>
