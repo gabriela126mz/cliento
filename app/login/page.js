@@ -23,8 +23,6 @@ export default function Login() {
       return
     }
 
-    alert("👋 Bienvenido de nuevo")
-
     router.push("/dashboard")
   }
 
