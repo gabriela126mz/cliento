@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { QRCodeCanvas } from "qrcode.react";
 
 export default function Page() {
+  const router = useRouter(); // ✅ AQUÍ DENTRO
   const { slug } = useParams();
   const [profile, setProfile] = useState(null);
 
@@ -37,23 +38,37 @@ export default function Page() {
       <p><b>WhatsApp:</b> {profile.whatsapp}</p>
       <p><b>Slug:</b> {profile.slug}</p>
 
+      {/* 🔙 BOTÓN VOLVER */}
+      <button
+        onClick={() => router.push("/panel")}
+        style={{
+          padding: "10px 14px",
+          background: "#333",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+          marginTop: "10px",
+        }}
+      >
+        ← Volver al panel
+      </button>
+
       {/* QR */}
       <div style={{ marginTop: 20 }}>
         <h3>📱 QR</h3>
         <QRCodeCanvas value={publicUrl} size={160} />
       </div>
 
-      {/* BOTÓN EDITAR */}
+      {/* EDITAR */}
       <div style={{ marginTop: 20 }}>
         <Link href={`/dashboard/${profile.slug}/edit`}>
           <button>✏️ Editar negocio</button>
         </Link>
       </div>
 
-      {/* LINK PÚBLICO */}
-      <p style={{ marginTop: 20 }}>
-        🔗 {publicUrl}
-      </p>
+      {/* LINK */}
+      <p style={{ marginTop: 20 }}>🔗 {publicUrl}</p>
     </div>
   );
 }

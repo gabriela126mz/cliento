@@ -24,26 +24,23 @@ export default function Login() {
       return;
     }
 
-    const user = data.user;
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("auth_id", user.id)
-      .maybeSingle();
-
-    if (profile && profile.slug) {
-      router.replace(`/dashboard/${profile.slug}`);
-    } else {
-      router.replace("/dashboard");
+    if (!data.user) {
+      alert("Error de usuario");
+      return;
     }
+
+    // 🚀 SIEMPRE AL PANEL
+    router.replace("/panel");
   };
 
   return (
     <div style={{ maxWidth: 400, margin: "0 auto" }}>
       <h1>Login</h1>
 
-      <form onSubmit={login} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <form
+        onSubmit={login}
+        style={{ display: "flex", flexDirection: "column", gap: 10 }}
+      >
         <input
           placeholder="email"
           value={email}
@@ -60,7 +57,6 @@ export default function Login() {
         <button type="submit">Entrar</button>
       </form>
 
-      {/* 🔥 BOTÓN REGISTRO */}
       <div style={{ marginTop: 20 }}>
         <p>¿No tienes cuenta?</p>
 
@@ -71,8 +67,8 @@ export default function Login() {
               color: "white",
               padding: "10px 14px",
               borderRadius: "8px",
-              cursor: "pointer",
               border: "none",
+              cursor: "pointer",
             }}
           >
             Regístrate
