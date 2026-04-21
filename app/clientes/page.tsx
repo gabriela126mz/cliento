@@ -4,26 +4,33 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
-export default function ClientesPage() {
+export default function Clientes() {
   const router = useRouter();
 
-  const [clients, setClients] = useState([]);
+  const [clients, setClients] = useState<any[]>([]);
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-  const [schedule, setSchedule] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  // 🔐 USER
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    schedule: "",
+    status: "nuevo",
+  });
+
   const getUser = async () => {
     const { data } = await supabase.auth.getUser();
     return data.user;
   };
 
-  // 📥 LOAD CLIENTS
-  const fetchClients = async () => {
+  const loadClients = async () => {
     const user = await getUser();
+    if (!user) {
+      router.push("/login");
+      return;
+    }
 
     const { data } = await supabase
       .from("clients")
@@ -35,88 +42,133 @@ export default function ClientesPage() {
   };
 
   useEffect(() => {
-    fetchClients();
+    loadClients();
   }, []);
 
-  // ➕ ADD CLIENT
-  const addClient = async (e) => {
+  const handleChange = (e: any) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // ➕ CREAR CLIENTE
+  const addClient = async (e: any) => {
     e.preventDefault();
 
     const user = await getUser();
+    if (!user) return;
 
     await supabase.from("clients").insert([
       {
         auth_id: user.id,
-        name,
-        phone,
-        email,
-        address,
-        schedule,
-        status: "activo",
+        ...form,
       },
     ]);
 
-    setName("");
-    setPhone("");
-    setEmail("");
-    setAddress("");
-    setSchedule("");
+    setForm({
+      name: "",
+      phone: "",
+      email: "",
+      address: "",
+      schedule: "",
+      status: "nuevo",
+    });
 
-    fetchClients();
+    loadClients();
   };
 
-  // 🔴 LOGOUT
-  const logout = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
+  // 🗑 BORRAR
+  const deleteClient = async (id: string) => {
+    await supabase.from("clients").delete().eq("id", id);
+    loadClients();
+  };
+
+  // ✏️ EDITAR (abrir)
+  const startEdit = (client: any) => {
+    setEditingId(client.id);
+    setForm({
+      name: client.name || "",
+      phone: client.phone || "",
+      email: client.email || "",
+      address: client.address || "",
+      schedule: client.schedule || "",
+      status: client.status || "nuevo",
+    });
+  };
+
+  // 💾 GUARDAR EDIT
+  const saveEdit = async () => {
+    await supabase
+      .from("clients")
+      .update(form)
+      .eq("id", editingId);
+
+    setEditingId(null);
+
+    setForm({
+      name: "",
+      phone: "",
+      email: "",
+      address: "",
+      schedule: "",
+      status: "nuevo",
+    });
+
+    loadClients();
   };
 
   return (
-    <main style={{ maxWidth: 800, margin: "0 auto", padding: 20 }}>
-      {/* HEADER */}
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h2>👥 Clientes</h2>
+    <main style={{ maxWidth: 900, margin: "0 auto", padding: 20 }}>
 
-        <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={() => router.push("/panel")}>
-            ← Panel
-          </button>
+      <button onClick={() => router.push("/panel")}>
+        ← Volver al panel
+      </button>
 
-          <button onClick={logout} style={{ background: "red", color: "white" }}>
-            Logout
-          </button>
-        </div>
-      </div>
+      <h2>👥 CRM Clientes</h2>
 
       {/* FORM */}
-      <form
-        onSubmit={addClient}
-        style={{ display: "flex", flexDirection: "column", gap: 8, maxWidth: 400 }}
-      >
-        <input placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
-        <input placeholder="Teléfono" value={phone} onChange={(e) => setPhone(e.target.value)} />
-        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input placeholder="Dirección" value={address} onChange={(e) => setAddress(e.target.value)} />
-        <input placeholder="Horario" value={schedule} onChange={(e) => setSchedule(e.target.value)} />
+      <form onSubmit={editingId ? (e) => { e.preventDefault(); saveEdit(); } : addClient}
+        style={{ display: "grid", gap: 8, maxWidth: 400 }}>
 
-        <button type="submit">➕ Añadir cliente</button>
+        <input name="name" value={form.name} onChange={handleChange} placeholder="Nombre" />
+        <input name="phone" value={form.phone} onChange={handleChange} placeholder="Teléfono" />
+        <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
+        <input name="address" value={form.address} onChange={handleChange} placeholder="Dirección" />
+        <input name="schedule" value={form.schedule} onChange={handleChange} placeholder="Horario" />
+
+        <select name="status" value={form.status} onChange={handleChange}>
+          <option value="nuevo">Nuevo</option>
+          <option value="contactado">Contactado</option>
+          <option value="cerrado">Cerrado</option>
+        </select>
+
+        <button type="submit">
+          {editingId ? "💾 Guardar cambios" : "➕ Añadir cliente"}
+        </button>
       </form>
 
-      {/* LISTA */}
+      {/* LISTADO */}
       <div style={{ marginTop: 30 }}>
-        <h3>📋 Lista de clientes</h3>
-
         {clients.map((c) => (
           <div key={c.id} style={{ border: "1px solid #ddd", padding: 10, marginBottom: 10 }}>
+
             <b>{c.name}</b>
-            <p>📞 {c.phone}</p>
-            <p>📧 {c.email}</p>
-            <p>📍 {c.address}</p>
-            <p>🕒 {c.schedule}</p>
-            <p>📌 {c.status}</p>
+            <p>{c.phone}</p>
+            <p>{c.email}</p>
+            <p>{c.status}</p>
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => startEdit(c)}>
+                ✏️ Editar
+              </button>
+
+              <button onClick={() => deleteClient(c.id)}>
+                🗑 Eliminar
+              </button>
+            </div>
+
           </div>
         ))}
       </div>
+
     </main>
   );
 }
