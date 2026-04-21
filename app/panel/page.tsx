@@ -13,16 +13,23 @@ export default function Panel() {
   const [clients, setClients] = useState<any[]>([]);
   const [publicUrl, setPublicUrl] = useState("");
 
-  // CLIENT FORM
+  // FORM CLIENT
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [schedule, setSchedule] = useState("");
+  const [status, setStatus] = useState("nuevo");
+
+  // EDIT MODAL
+  const [editingClient, setEditingClient] = useState<any>(null);
 
   const getUser = async () => {
     const { data } = await supabase.auth.getUser();
     return data.user;
   };
 
-  // 🔵 LOAD EVERYTHING
+  // LOAD
   useEffect(() => {
     const load = async () => {
       const user = await getUser();
@@ -30,7 +37,6 @@ export default function Panel() {
 
       setUserEmail(user.email || "");
 
-      // PROFILE
       const { data: prof } = await supabase
         .from("profiles")
         .select("*")
@@ -43,7 +49,6 @@ export default function Panel() {
         setPublicUrl(`${window.location.origin}/negocio/${prof.slug}`);
       }
 
-      // CLIENTS
       const { data: cli } = await supabase
         .from("clients")
         .select("*")
@@ -56,39 +61,53 @@ export default function Panel() {
     load();
   }, []);
 
-  // 🚪 LOGOUT
+  // LOGOUT
   const logout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
   };
 
-  // ➕ ADD CLIENT
+  // ADD CLIENT
   const addClient = async (e: any) => {
     e.preventDefault();
 
     const user = await getUser();
+    if (!user) return;
 
-    await supabase.from("clients").insert([
+    const { error } = await supabase.from("clients").insert([
       {
         auth_id: user.id,
-        name,
-        phone,
+        name: name || "",
+        phone: phone || "",
+        email: email || "",
+        address: address || "",
+        schedule: schedule || "",
+        status: status || "nuevo",
       },
     ]);
 
+    if (error) {
+      console.error("INSERT ERROR:", error);
+      alert("Error al guardar cliente");
+      return;
+    }
+
     setName("");
     setPhone("");
+    setEmail("");
+    setAddress("");
+    setSchedule("");
+    setStatus("nuevo");
 
     const { data } = await supabase
       .from("clients")
       .select("*")
-      .eq("auth_id", user.id)
-      .order("created_at", { ascending: false });
+      .eq("auth_id", user.id);
 
     setClients(data || []);
   };
 
-  // 🗑 DELETE
+  // DELETE
   const deleteClient = async (id: string) => {
     await supabase.from("clients").delete().eq("id", id);
 
@@ -101,20 +120,21 @@ export default function Panel() {
     setClients(data || []);
   };
 
-  // ✏️ EDIT
-  const editClient = async (client: any) => {
-    const newName = prompt("Nombre", client.name);
-    const newPhone = prompt("Teléfono", client.phone);
-
-    if (!newName) return;
-
+  // UPDATE
+  const updateClient = async () => {
     await supabase
       .from("clients")
       .update({
-        name: newName,
-        phone: newPhone,
+        name: editingClient.name,
+        phone: editingClient.phone,
+        email: editingClient.email,
+        address: editingClient.address,
+        schedule: editingClient.schedule,
+        status: editingClient.status,
       })
-      .eq("id", client.id);
+      .eq("id", editingClient.id);
+
+    setEditingClient(null);
 
     const user = await getUser();
     const { data } = await supabase
@@ -137,25 +157,23 @@ export default function Panel() {
         </button>
       </div>
 
-      {/* 🧠 NEGOCIO */}
+      {/* NEGOCIO */}
       {profile && (
-        <div style={{ border: "1px solid #ddd", padding: 15, borderRadius: 10, marginTop: 20 }}>
+        <div style={{ border: "1px solid #ddd", padding: 15, borderRadius: 10 }}>
           <h3>📊 Tu negocio</h3>
 
           <p><b>Nombre:</b> {profile.business_name}</p>
           <p><b>Descripción:</b> {profile.description}</p>
           <p><b>WhatsApp:</b> {profile.whatsapp}</p>
 
-          {/* BOTONES LIMPIOS */}
-          <div style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
-
+          <div style={{ display: "flex", gap: 10 }}>
             <a
               href={`/negocio/${profile.slug}`}
               target="_blank"
               style={{
                 background: "black",
                 color: "white",
-                padding: "10px 14px",
+                padding: 10,
                 borderRadius: 8,
                 textDecoration: "none",
               }}
@@ -168,66 +186,93 @@ export default function Panel() {
               style={{
                 background: "blue",
                 color: "white",
-                padding: "10px 14px",
+                padding: 10,
                 borderRadius: 8,
                 textDecoration: "none",
               }}
             >
               ✏️ Editar
             </a>
-
           </div>
 
-          {/* QR */}
-          <div style={{ marginTop: 15 }}>
-            <h4>📱 QR</h4>
+          <div style={{ marginTop: 10 }}>
             <QRCodeCanvas value={publicUrl} size={140} />
           </div>
         </div>
       )}
 
-      {/* ➕ CLIENTES */}
-      <div style={{ marginTop: 30 }}>
-        <h3>👥 Clientes</h3>
+      {/* FORM */}
+      <h3 style={{ marginTop: 30 }}>➕ Añadir cliente</h3>
 
-        <form onSubmit={addClient} style={{ display: "flex", gap: 10 }}>
-          <input
-            placeholder="Nombre"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            placeholder="Teléfono"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
+      <form onSubmit={addClient} style={{ display: "grid", gap: 8, maxWidth: 400 }}>
+        <input value={name || ""} onChange={(e) => setName(e.target.value)} placeholder="Nombre" />
+        <input value={phone || ""} onChange={(e) => setPhone(e.target.value)} placeholder="Teléfono" />
+        <input value={email || ""} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+        <input value={address || ""} onChange={(e) => setAddress(e.target.value)} placeholder="Dirección" />
+        <input value={schedule || ""} onChange={(e) => setSchedule(e.target.value)} placeholder="Horario" />
 
-          <button type="submit">Añadir</button>
-        </form>
+        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="nuevo">Nuevo</option>
+          <option value="contactado">Contactado</option>
+          <option value="cerrado">Cerrado</option>
+        </select>
 
-        {/* LISTA */}
-        <div style={{ marginTop: 20 }}>
-          {clients.map((c) => (
-            <div
-              key={c.id}
-              style={{
-                border: "1px solid #ddd",
-                padding: 10,
-                borderRadius: 8,
-                marginBottom: 10,
-              }}
-            >
-              <b>{c.name}</b>
-              <p>{c.phone}</p>
+        <button type="submit">Guardar cliente</button>
+      </form>
 
-              <div style={{ display: "flex", gap: 10 }}>
-                <button onClick={() => editClient(c)}>✏️ Editar</button>
-                <button onClick={() => deleteClient(c.id)}>🗑 Eliminar</button>
-              </div>
-            </div>
-          ))}
+      {/* LIST */}
+      <h3 style={{ marginTop: 30 }}>👥 Clientes</h3>
+
+      {clients.map((c) => (
+        <div key={c.id} style={{ border: "1px solid #ddd", padding: 10, marginBottom: 10 }}>
+          <b>{c.name}</b> — {c.phone}
+          <p>{c.email}</p>
+          <p>{c.status}</p>
+
+          <button onClick={() => setEditingClient(c)}>✏️ Editar</button>
+          <button onClick={() => deleteClient(c.id)}>🗑 Eliminar</button>
         </div>
-      </div>
+      ))}
+
+      {/* MODAL EDIT */}
+      {editingClient && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <div style={{ background: "white", padding: 20, borderRadius: 10, width: 400 }}>
+            <h3>Editar cliente</h3>
+
+            <input
+              value={editingClient.name || ""}
+              onChange={(e) =>
+                setEditingClient({ ...editingClient, name: e.target.value })
+              }
+            />
+
+            <input
+              value={editingClient.phone || ""}
+              onChange={(e) =>
+                setEditingClient({ ...editingClient, phone: e.target.value })
+              }
+            />
+
+            <input
+              value={editingClient.email || ""}
+              onChange={(e) =>
+                setEditingClient({ ...editingClient, email: e.target.value })
+              }
+            />
+
+            <button onClick={updateClient}>Guardar</button>
+            <button onClick={() => setEditingClient(null)}>Cancelar</button>
+          </div>
+        </div>
+      )}
 
     </main>
   );
