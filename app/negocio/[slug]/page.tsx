@@ -21,375 +21,236 @@ export default function Page() {
     load();
   }, [slug]);
 
-  if (!profile) return <p>Cargando...</p>;
+  if (!profile) return <div className="p-10">Cargando...</div>;
 
   return (
-    <main style={{ fontFamily: "Poppins, sans-serif", background: "#f7fdf8" }}>
+    <main className="bg-white text-gray-900 font-sans overflow-x-hidden">
 
-      {/* 🔝 NAVBAR */}
-      <nav style={nav}>
-        <h2 style={{ fontSize: 28 }}>{profile.business_name}</h2>
+      {/* FIXED SOCIAL */}
+      <div className="fixed left-4 top-1/2 -translate-y-1/2 flex flex-col gap-5 z-50">
+        <a href="#" className="text-pink-500 text-3xl hover:scale-110 transition">📸</a>
+        <a href="#" className="text-black text-3xl hover:scale-110 transition">🎵</a>
+        <a href="#" className="text-blue-600 text-3xl hover:scale-110 transition">💼</a>
+      </div>
 
-        <div style={menu}>
+      {/* WHATSAPP */}
+      <a
+        href={`https://wa.me/${profile.whatsapp}`}
+        className="fixed bottom-6 right-6 bg-green-500 text-white p-5 rounded-full shadow-2xl text-2xl z-50 animate-pulse"
+      >
+        💬
+      </a>
+
+      {/* NAV */}
+      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur border-b z-40 flex justify-between items-center px-6 md:px-10 py-4">
+
+        <div className="flex items-center gap-3 font-bold text-xl">
+          <div className="w-9 h-9 bg-green-500 rounded-full"></div>
+          {profile.business_name}
+        </div>
+
+        <div className="hidden md:flex gap-6 text-sm font-medium">
           <a href="#servicios">Servicios</a>
-          <a href="#sobre">Sobre mí</a>
           <a href="#galeria">Galería</a>
+          <a href="#sobre">Quiénes somos</a>
+          <a href="#por-que">Por qué</a>
           <a href="#contacto">Contacto</a>
         </div>
-      </nav>
 
-      {/* 🔥 HERO */}
-      <section style={hero}>
-        <div style={overlay} />
-
-        <div style={heroContent}>
-          <h1 style={title}>
-            Impulsa tu negocio con resultados reales
-          </h1>
-
-          <p style={subtitle}>
-            {profile.description}
-          </p>
-
-          <div style={{ display: "flex", gap: 15 }}>
-            <a href="#contacto" style={btnPrimary}>
-              Solicitar presupuesto
-            </a>
-
-            <a href="#servicios" style={btnSecondary}>
-              Ver servicios
-            </a>
-          </div>
-        </div>
-
-        {/* WhatsApp grande */}
         <a
           href={`https://wa.me/${profile.whatsapp}`}
-          target="_blank"
-          style={whatsapp}
+          className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold"
         >
-          💬
+          WhatsApp
         </a>
+      </nav>
 
-        {/* Redes */}
-        <div style={social}>
-          <div>📷</div>
-          <div>🎵</div>
-          <div>🌐</div>
-        </div>
-      </section>
+      {/* HERO */}
+      <section className="h-screen flex items-center justify-center px-6 bg-gradient-to-b from-gray-50 to-white text-center">
+        <div className="max-w-3xl">
 
-      {/* 💡 SLOGAN */}
-      <section style={slogan}>
-        <h2 style={{ fontSize: 34 }}>
-          Creatividad con propósito
-        </h2>
-        <p>
-          Ayudamos a negocios a crecer con estrategias reales y soluciones modernas.
-        </p>
-      </section>
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-4">
+            {profile.business_name}
+          </h1>
 
-      {/* 🟩 SERVICIOS */}
-      <section id="servicios" style={section}>
-        <h2 style={sectionTitle}>Servicios</h2>
-
-        <div style={services}>
-          {[1, 2, 3].map((s) => (
-            <div key={s} style={card}>
-              <div style={img}></div>
-
-              <h3 style={{ marginTop: 20 }}>Servicio {s}</h3>
-
-              <p style={{ margin: "10px 0 20px" }}>
-                Descripción profesional del servicio.
-              </p>
-
-              <a
-                href={`https://wa.me/${profile.whatsapp}`}
-                style={btnPrimary}
-              >
-                Contactar
-              </a>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 🧠 SOBRE / QUIÉNES SOMOS */}
-      <section id="sobre" style={about}>
-        <div style={{ flex: 1 }}>
-          <h2>Quiénes somos</h2>
-
-          <p>
-            Somos un negocio enfocado en ofrecer soluciones eficaces,
-            rápidas y adaptadas a cada cliente.
+          <p className="text-lg md:text-xl text-gray-600 mb-6">
+            Agencia digital enfocada en crecimiento real
           </p>
-
-          <ul>
-            <li>✔ Atención rápida</li>
-            <li>✔ Experiencia profesional</li>
-            <li>✔ Resultados reales</li>
-          </ul>
-        </div>
-
-        <div style={aboutImg}></div>
-      </section>
-
-      {/* ⭐ POR QUÉ ELEGIRNOS */}
-      <section style={why}>
-        <h2 style={sectionTitle}>¿Por qué elegirnos?</h2>
-
-        <div style={features}>
-          {[
-            { icon: "🎓", title: "Formación", text: "Equipo cualificado" },
-            { icon: "⏱", title: "Experiencia", text: "Años en el sector" },
-            { icon: "🛠", title: "Calidad", text: "Material premium" },
-          ].map((f, i) => (
-            <div key={i} style={feature}>
-              <div style={icon}>{f.icon}</div>
-              <h3>{f.title}</h3>
-              <p>{f.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 🖼 GALERÍA */}
-      <section id="galeria" style={section}>
-        <h2 style={sectionTitle}>Trabajos realizados</h2>
-
-        <div style={gallery}>
-          {[1, 2, 3].map((g) => (
-            <div key={g} style={galleryItem}></div>
-          ))}
-        </div>
-      </section>
-
-      {/* 📩 CONTACTO */}
-      <section id="contacto" style={contact}>
-        <div style={form}>
-          <h2>Solicita tu presupuesto</h2>
-          <p>Sin compromiso</p>
-
-          <input placeholder="Nombre" style={input} />
-          <input placeholder="Teléfono" style={input} />
-          <textarea placeholder="Cuéntanos..." style={input} />
 
           <a
             href={`https://wa.me/${profile.whatsapp}`}
-            style={btnPrimary}
+            className="bg-green-500 text-white px-6 py-3 rounded-full text-lg font-semibold shadow-lg hover:scale-105 transition inline-block"
+          >
+            Solicitar propuesta sin compromiso
+          </a>
+        </div>
+      </section>
+
+      {/* KPI */}
+      <section className="py-20 bg-white">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto text-center px-6">
+
+          {[
+            { n: "+20K€", t: "Facturación media clientes" },
+            { n: "+120%", t: "Crecimiento en leads" },
+            { n: "48h", t: "Tiempo de respuesta" },
+          ].map((k, i) => (
+            <div key={i} className="p-10 border rounded-2xl shadow hover:shadow-xl transition">
+              <div className="text-5xl font-black text-green-600">{k.n}</div>
+              <div className="text-gray-600 mt-2">{k.t}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SERVICIOS */}
+      <section id="servicios" className="py-24 bg-gray-50">
+        <h2 className="text-4xl font-bold text-center mb-12">Servicios</h2>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6">
+
+          {[
+            {
+              t: "Branding",
+              img: "https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa"
+            },
+            {
+              t: "Ads Performance",
+              img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71"
+            },
+            {
+              t: "Web Conversion",
+              img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
+            }
+          ].map((s, i) => (
+            <div key={i} className="bg-white rounded-2xl shadow-lg hover:scale-105 transition overflow-hidden">
+              <img src={s.img} className="h-52 w-full object-cover" />
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2">{s.t}</h3>
+                <p className="text-gray-600">Estrategia enfocada en resultados reales.</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* GALERIA */}
+      <section id="galeria" className="py-24 bg-white">
+        <h2 className="text-4xl font-bold text-center mb-12">Galería</h2>
+
+        <div className="grid md:grid-cols-3 gap-5 max-w-6xl mx-auto px-6">
+          {[
+            "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
+            "https://images.unsplash.com/photo-1553877522-43269d4ea984",
+            "https://images.unsplash.com/photo-1522071820081-009f0129c71c",
+            "https://images.unsplash.com/photo-1556761175-b413da4baf72",
+            "https://images.unsplash.com/photo-1522202228886-6c5b1c3c1f1a",
+            "https://images.unsplash.com/photo-1551288049-bebda4e38f71"
+          ].map((img, i) => (
+            <img
+              key={i}
+              src={img}
+              className="h-64 w-full object-cover rounded-xl hover:scale-105 transition"
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* SOBRE */}
+      <section id="sobre" className="py-24 bg-gray-50">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 px-6 items-center">
+
+          <div>
+            <h2 className="text-4xl font-bold mb-4">Quiénes somos</h2>
+            <p className="text-gray-600 text-lg">
+              Somos un equipo especializado en crecimiento digital, publicidad y conversión.
+            </p>
+          </div>
+
+          <img
+            src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
+            className="rounded-2xl shadow-lg"
+          />
+
+        </div>
+      </section>
+
+      {/* POR QUE */}
+      <section id="por-que" className="py-24 bg-white">
+        <h2 className="text-4xl font-bold text-center mb-12">¿Por qué nosotros?</h2>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6 text-center">
+
+          <div className="p-10 border rounded-2xl hover:shadow-xl transition">
+            <div className="text-5xl mb-3">📊</div>
+            <h3 className="text-xl font-bold mb-2">Resultados</h3>
+            <p className="text-gray-600">Enfoque real en resultados medibles.</p>
+          </div>
+
+          <div className="p-10 border rounded-2xl hover:shadow-xl transition">
+            <div className="text-5xl mb-3">🧠</div>
+            <h3 className="text-xl font-bold mb-2">Estrategia</h3>
+            <p className="text-gray-600">Enfoque real en resultados medibles.</p>
+          </div>
+
+          <div className="p-10 border rounded-2xl hover:shadow-xl transition">
+            <div className="text-5xl mb-3">🚀</div>
+            <h3 className="text-xl font-bold mb-2">Crecimiento</h3>
+            <p className="text-gray-600">Enfoque real en resultados medibles.</p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* CONTACTO */}
+      <section id="contacto" className="py-24 bg-gradient-to-r from-gray-50 to-white">
+        <div className="max-w-2xl mx-auto bg-white p-10 rounded-2xl shadow-2xl">
+
+          <h2 className="text-3xl font-bold text-center mb-2">Hablemos de tu proyecto</h2>
+          <p className="text-center text-gray-500 mb-6">
+            Sin compromiso. Cuéntanos tu idea.
+          </p>
+
+          <input className="w-full p-3 border rounded mb-3" placeholder="Nombre" />
+          <input className="w-full p-3 border rounded mb-3" placeholder="Email" />
+          <textarea className="w-full p-3 border rounded mb-4" placeholder="Mensaje" />
+
+          <a
+            href={`https://wa.me/${profile.whatsapp}`}
+            className="block text-center bg-green-500 text-white py-3 rounded-full font-semibold hover:scale-105 transition"
           >
             Enviar por WhatsApp
           </a>
         </div>
       </section>
 
-      {/* 🧾 FOOTER */}
-      <footer style={footer}>
-        <div style={footerGrid}>
-          <div>
-            <h3>{profile.business_name}</h3>
-            <p>{profile.description}</p>
+      {/* FOOTER */}
+      <footer className="bg-black text-white py-14">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 px-6">
+
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-green-500 rounded-full"></div>
+            <div>
+              <h3 className="font-bold">{profile.business_name}</h3>
+              <p className="text-gray-400">Digital Agency</p>
+            </div>
           </div>
 
           <div>
-            <h4>Servicios</h4>
-            <p>Diseño</p>
-            <p>Mantenimiento</p>
+            <p>📧 contacto@empresa.com</p>
+            <p>📞 +34 XXX XXX XXX</p>
+            <p>📍 Madrid</p>
           </div>
 
-          <div>
-            <h4>Contacto</h4>
-            <p>📞 {profile.whatsapp}</p>
+          <div className="flex flex-col gap-2">
+            <a>Instagram</a>
+            <a>TikTok</a>
+            <a>LinkedIn</a>
           </div>
+
         </div>
       </footer>
+
     </main>
   );
 }
-
-/* 🎨 ESTILOS */
-
-const nav = {
-  position: "fixed",
-  width: "100%",
-  top: 0,
-  background: "white",
-  padding: "15px 40px",
-  display: "flex",
-  justifyContent: "space-between",
-  zIndex: 10,
-};
-
-const menu = {
-  display: "flex",
-  gap: 20,
-};
-
-const hero = {
-  height: "100vh",
-  background:
-    "url(https://images.unsplash.com/photo-1501004318641-b39e6451bec6) center/cover",
-  display: "flex",
-  alignItems: "center",
-  padding: "80px 40px",
-  color: "white",
-  position: "relative",
-};
-
-const overlay = {
-  position: "absolute",
-  inset: 0,
-  background: "rgba(0,0,0,0.5)",
-};
-
-const heroContent = { position: "relative", maxWidth: 600 };
-
-const title = { fontSize: 56, fontWeight: "bold" };
-const subtitle = { fontSize: 20, margin: "20px 0" };
-
-const btnPrimary = {
-  background: "#2e7d32",
-  padding: "14px 22px",
-  color: "white",
-  borderRadius: 8,
-};
-
-const btnSecondary = {
-  border: "1px solid white",
-  padding: "14px 22px",
-  borderRadius: 8,
-};
-
-const whatsapp = {
-  position: "fixed",
-  bottom: 30,
-  right: 30,
-  background: "#25D366",
-  padding: 22,
-  borderRadius: "50%",
-  fontSize: 26,
-};
-
-const social = {
-  position: "fixed",
-  right: 20,
-  top: "40%",
-  display: "flex",
-  flexDirection: "column",
-  gap: 10,
-};
-
-const slogan = {
-  textAlign: "center",
-  padding: 50,
-};
-
-const section = {
-  padding: "80px 20px",
-  maxWidth: 1200,
-  margin: "0 auto",
-};
-
-const sectionTitle = {
-  textAlign: "center",
-  fontSize: 32,
-  marginBottom: 40,
-};
-
-const services = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))",
-  gap: 30,
-};
-
-const card = {
-  background: "white",
-  padding: 20,
-  borderRadius: 12,
-  textAlign: "center",
-};
-
-const img = {
-  height: 250,
-  background:
-    "url(https://images.unsplash.com/photo-1466692476868-aef1dfb1e735) center/cover",
-  borderRadius: 10,
-};
-
-const about = {
-  display: "flex",
-  gap: 40,
-  padding: 80,
-  alignItems: "center",
-};
-
-const aboutImg = {
-  flex: 1,
-  height: 300,
-  background:
-    "url(https://images.unsplash.com/photo-1501004318641-b39e6451bec6) center/cover",
-};
-
-const why = {
-  background: "#e8f5e9",
-  padding: 80,
-};
-
-const features = {
-  display: "flex",
-  justifyContent: "center",
-  gap: 30,
-};
-
-const feature = {
-  background: "white",
-  padding: 30,
-  borderRadius: 12,
-  textAlign: "center",
-};
-
-const icon = { fontSize: 40 };
-
-const gallery = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3,1fr)",
-  gap: 20,
-};
-
-const galleryItem = {
-  height: 250,
-  background:
-    "url(https://images.unsplash.com/photo-1501004318641-b39e6451bec6) center/cover",
-};
-
-const contact = {
-  padding: 80,
-  display: "flex",
-  justifyContent: "center",
-};
-
-const form = {
-  background: "white",
-  padding: 30,
-  borderRadius: 12,
-  width: 400,
-};
-
-const input = {
-  width: "100%",
-  padding: 10,
-  marginBottom: 10,
-};
-
-const footer = {
-  background: "#1b5e20",
-  color: "white",
-  padding: 40,
-};
-
-const footerGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
-  gap: 20,
-};
