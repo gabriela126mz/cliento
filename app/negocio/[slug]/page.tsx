@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { QRCodeCanvas } from "qrcode.react";
 
 export default function Page() {
   const { slug } = useParams();
@@ -22,108 +21,92 @@ export default function Page() {
     load();
   }, [slug]);
 
-  if (!profile) return <p style={{ padding: 40 }}>Cargando...</p>;
-
-  const url =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/negocio/${profile.slug}`
-      : "";
+  if (!profile) return <p>Cargando...</p>;
 
   return (
-    <main style={{ fontFamily: "Inter, Arial", background: "#f4fdf7" }}>
+    <main style={{ fontFamily: "Poppins, sans-serif", background: "#f7fdf8" }}>
 
-      {/* 🌿 NAV */}
+      {/* 🔝 NAVBAR */}
       <nav style={nav}>
-        <h2 style={{ fontSize: 24 }}>{profile.business_name}</h2>
+        <h2 style={{ fontSize: 28 }}>{profile.business_name}</h2>
+
         <div style={menu}>
           <a href="#servicios">Servicios</a>
-          <a href="#sobre">Empresa</a>
+          <a href="#sobre">Sobre mí</a>
+          <a href="#galeria">Galería</a>
           <a href="#contacto">Contacto</a>
         </div>
       </nav>
 
-      {/* 🟢 HERO */}
+      {/* 🔥 HERO */}
       <section style={hero}>
-        <div style={{ maxWidth: 600 }}>
-          <h1 style={{ fontSize: 52, marginBottom: 10 }}>
-            {profile.business_name}
+        <div style={overlay} />
+
+        <div style={heroContent}>
+          <h1 style={title}>
+            Impulsa tu negocio con resultados reales
           </h1>
 
-          <p style={{ fontSize: 20, color: "#d1fae5" }}>
+          <p style={subtitle}>
             {profile.description}
           </p>
 
-          <a href="#contacto" style={cta}>
-            Solicitar presupuesto
-          </a>
+          <div style={{ display: "flex", gap: 15 }}>
+            <a href="#contacto" style={btnPrimary}>
+              Solicitar presupuesto
+            </a>
+
+            <a href="#servicios" style={btnSecondary}>
+              Ver servicios
+            </a>
+          </div>
+        </div>
+
+        {/* WhatsApp grande */}
+        <a
+          href={`https://wa.me/${profile.whatsapp}`}
+          target="_blank"
+          style={whatsapp}
+        >
+          💬
+        </a>
+
+        {/* Redes */}
+        <div style={social}>
+          <div>📷</div>
+          <div>🎵</div>
+          <div>🌐</div>
         </div>
       </section>
 
-      {/* 🧠 QUIÉNES SOMOS */}
-      <section id="sobre" style={sectionCenter}>
-        <h2 style={{ fontSize: 32 }}>Quiénes somos</h2>
-
-        <p style={{ maxWidth: 600, margin: "10px auto", color: "#555" }}>
-          Negocio especializado en soluciones profesionales, rápidas y adaptadas a cada cliente.
+      {/* 💡 SLOGAN */}
+      <section style={slogan}>
+        <h2 style={{ fontSize: 34 }}>
+          Creatividad con propósito
+        </h2>
+        <p>
+          Ayudamos a negocios a crecer con estrategias reales y soluciones modernas.
         </p>
-
-        {/* TARJETAS GRANDES */}
-        <div style={cardsGrid}>
-          {[
-            { icon: "⚡", title: "Atención rápida" },
-            { icon: "🧠", title: "Experiencia" },
-            { icon: "📈", title: "Resultados reales" },
-          ].map((item, i) => (
-            <div key={i} className="bigCard">
-              <div style={{ fontSize: 40 }}>{item.icon}</div>
-              <h3>{item.title}</h3>
-            </div>
-          ))}
-        </div>
       </section>
 
-      {/* 🟩 BLOQUES EMPRESA */}
-      <section style={section}>
-        <div style={grid3}>
-          <div className="infoBox">
-            <h3>Formación</h3>
-            <p>
-              Profesionales cualificados con conocimientos avanzados en el sector.
-            </p>
-          </div>
-
-          <div className="infoBox">
-            <h3>Experiencia</h3>
-            <p>
-              Años de experiencia ofreciendo soluciones reales a nuestros clientes.
-            </p>
-          </div>
-
-          <div className="infoBox">
-            <h3>Materiales</h3>
-            <p>
-              Trabajamos con productos de calidad y técnicas modernas.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 🟢 SERVICIOS */}
+      {/* 🟩 SERVICIOS */}
       <section id="servicios" style={section}>
-        <h2 style={{ textAlign: "center" }}>Servicios</h2>
+        <h2 style={sectionTitle}>Servicios</h2>
 
         <div style={services}>
           {[1, 2, 3].map((s) => (
-            <div key={s} className="serviceCard">
+            <div key={s} style={card}>
               <div style={img}></div>
 
-              <h3>Servicio {s}</h3>
-              <p>Descripción clara del servicio.</p>
+              <h3 style={{ marginTop: 20 }}>Servicio {s}</h3>
+
+              <p style={{ margin: "10px 0 20px" }}>
+                Descripción profesional del servicio.
+              </p>
 
               <a
                 href={`https://wa.me/${profile.whatsapp}`}
-                target="_blank"
-                style={btn}
+                style={btnPrimary}
               >
                 Contactar
               </a>
@@ -132,40 +115,74 @@ export default function Page() {
         </div>
       </section>
 
+      {/* 🧠 SOBRE / QUIÉNES SOMOS */}
+      <section id="sobre" style={about}>
+        <div style={{ flex: 1 }}>
+          <h2>Quiénes somos</h2>
+
+          <p>
+            Somos un negocio enfocado en ofrecer soluciones eficaces,
+            rápidas y adaptadas a cada cliente.
+          </p>
+
+          <ul>
+            <li>✔ Atención rápida</li>
+            <li>✔ Experiencia profesional</li>
+            <li>✔ Resultados reales</li>
+          </ul>
+        </div>
+
+        <div style={aboutImg}></div>
+      </section>
+
+      {/* ⭐ POR QUÉ ELEGIRNOS */}
+      <section style={why}>
+        <h2 style={sectionTitle}>¿Por qué elegirnos?</h2>
+
+        <div style={features}>
+          {[
+            { icon: "🎓", title: "Formación", text: "Equipo cualificado" },
+            { icon: "⏱", title: "Experiencia", text: "Años en el sector" },
+            { icon: "🛠", title: "Calidad", text: "Material premium" },
+          ].map((f, i) => (
+            <div key={i} style={feature}>
+              <div style={icon}>{f.icon}</div>
+              <h3>{f.title}</h3>
+              <p>{f.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 🖼 GALERÍA */}
+      <section id="galeria" style={section}>
+        <h2 style={sectionTitle}>Trabajos realizados</h2>
+
+        <div style={gallery}>
+          {[1, 2, 3].map((g) => (
+            <div key={g} style={galleryItem}></div>
+          ))}
+        </div>
+      </section>
+
       {/* 📩 CONTACTO */}
       <section id="contacto" style={contact}>
-        <div style={{ maxWidth: 500 }}>
-          <h2>Solicita información</h2>
-          <p>Te respondemos sin compromiso</p>
+        <div style={form}>
+          <h2>Solicita tu presupuesto</h2>
+          <p>Sin compromiso</p>
 
           <input placeholder="Nombre" style={input} />
           <input placeholder="Teléfono" style={input} />
-          <textarea placeholder="¿Qué necesitas?" style={input} />
+          <textarea placeholder="Cuéntanos..." style={input} />
 
           <a
             href={`https://wa.me/${profile.whatsapp}`}
-            target="_blank"
-            style={ctaWhite}
+            style={btnPrimary}
           >
             Enviar por WhatsApp
           </a>
         </div>
       </section>
-
-      {/* 🔗 REDES */}
-      <section style={sectionCenter}>
-        <h3>Síguenos</h3>
-        <div style={socials}>
-          <div className="social">📷 Instagram</div>
-          <div className="social">🎵 TikTok</div>
-          <div className="social">🌐 Web</div>
-        </div>
-      </section>
-
-      {/* 📱 QR ABAJO */}
-      <div style={{ textAlign: "center", padding: 20 }}>
-        <QRCodeCanvas value={url} size={120} />
-      </div>
 
       {/* 🧾 FOOTER */}
       <footer style={footer}>
@@ -177,61 +194,16 @@ export default function Page() {
 
           <div>
             <h4>Servicios</h4>
-            <p>Servicio 1</p>
-            <p>Servicio 2</p>
+            <p>Diseño</p>
+            <p>Mantenimiento</p>
           </div>
 
           <div>
             <h4>Contacto</h4>
             <p>📞 {profile.whatsapp}</p>
-            <p>Email@empresa.com</p>
           </div>
         </div>
-
-        <p style={{ marginTop: 20, fontSize: 12 }}>
-          © 2026 · Cliento
-        </p>
       </footer>
-
-      {/* ✨ ANIMACIONES */}
-      <style jsx>{`
-        .bigCard {
-          background: white;
-          padding: 30px;
-          border-radius: 14px;
-          text-align: center;
-          transition: 0.3s;
-        }
-
-        .bigCard:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        .infoBox {
-          background: #dcfce7;
-          padding: 20px;
-          border-radius: 12px;
-        }
-
-        .serviceCard {
-          background: white;
-          padding: 20px;
-          border-radius: 12px;
-          text-align: center;
-          transition: 0.3s;
-        }
-
-        .serviceCard:hover {
-          transform: scale(1.03);
-        }
-
-        .social {
-          padding: 12px;
-          background: #dcfce7;
-          border-radius: 8px;
-        }
-      `}</style>
     </main>
   );
 }
@@ -239,111 +211,179 @@ export default function Page() {
 /* 🎨 ESTILOS */
 
 const nav = {
+  position: "fixed",
+  width: "100%",
+  top: 0,
+  background: "white",
+  padding: "15px 40px",
   display: "flex",
   justifyContent: "space-between",
-  padding: 20,
-  background: "#065f46",
-  color: "white",
+  zIndex: 10,
 };
 
-const menu = { display: "flex", gap: 20 };
+const menu = {
+  display: "flex",
+  gap: 20,
+};
 
 const hero = {
-  padding: "100px 20px",
-  background: "linear-gradient(135deg,#065f46,#10b981,#34d399)",
+  height: "100vh",
+  background:
+    "url(https://images.unsplash.com/photo-1501004318641-b39e6451bec6) center/cover",
+  display: "flex",
+  alignItems: "center",
+  padding: "80px 40px",
   color: "white",
-  textAlign: "center",
+  position: "relative",
 };
 
-const cta = {
-  marginTop: 20,
-  display: "inline-block",
-  background: "white",
-  color: "#065f46",
-  padding: "12px 18px",
+const overlay = {
+  position: "absolute",
+  inset: 0,
+  background: "rgba(0,0,0,0.5)",
+};
+
+const heroContent = { position: "relative", maxWidth: 600 };
+
+const title = { fontSize: 56, fontWeight: "bold" };
+const subtitle = { fontSize: 20, margin: "20px 0" };
+
+const btnPrimary = {
+  background: "#2e7d32",
+  padding: "14px 22px",
+  color: "white",
   borderRadius: 8,
 };
 
+const btnSecondary = {
+  border: "1px solid white",
+  padding: "14px 22px",
+  borderRadius: 8,
+};
+
+const whatsapp = {
+  position: "fixed",
+  bottom: 30,
+  right: 30,
+  background: "#25D366",
+  padding: 22,
+  borderRadius: "50%",
+  fontSize: 26,
+};
+
+const social = {
+  position: "fixed",
+  right: 20,
+  top: "40%",
+  display: "flex",
+  flexDirection: "column",
+  gap: 10,
+};
+
+const slogan = {
+  textAlign: "center",
+  padding: 50,
+};
+
 const section = {
-  padding: "60px 20px",
-  maxWidth: 1100,
+  padding: "80px 20px",
+  maxWidth: 1200,
   margin: "0 auto",
 };
 
-const sectionCenter = {
-  padding: "60px 20px",
+const sectionTitle = {
   textAlign: "center",
-};
-
-const cardsGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
-  gap: 20,
-  marginTop: 30,
-};
-
-const grid3 = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
-  gap: 20,
+  fontSize: 32,
+  marginBottom: 40,
 };
 
 const services = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))",
-  gap: 20,
-  marginTop: 30,
+  gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))",
+  gap: 30,
+};
+
+const card = {
+  background: "white",
+  padding: 20,
+  borderRadius: 12,
+  textAlign: "center",
 };
 
 const img = {
-  height: 180,
+  height: 250,
   background:
-    "url(https://images.unsplash.com/photo-1498050108023-c5249f4df085) center/cover",
+    "url(https://images.unsplash.com/photo-1466692476868-aef1dfb1e735) center/cover",
   borderRadius: 10,
-  marginBottom: 10,
 };
 
-const btn = {
-  display: "inline-block",
-  marginTop: 10,
-  background: "#10b981",
-  color: "white",
-  padding: "10px 14px",
-  borderRadius: 6,
+const about = {
+  display: "flex",
+  gap: 40,
+  padding: 80,
+  alignItems: "center",
+};
+
+const aboutImg = {
+  flex: 1,
+  height: 300,
+  background:
+    "url(https://images.unsplash.com/photo-1501004318641-b39e6451bec6) center/cover",
+};
+
+const why = {
+  background: "#e8f5e9",
+  padding: 80,
+};
+
+const features = {
+  display: "flex",
+  justifyContent: "center",
+  gap: 30,
+};
+
+const feature = {
+  background: "white",
+  padding: 30,
+  borderRadius: 12,
+  textAlign: "center",
+};
+
+const icon = { fontSize: 40 };
+
+const gallery = {
+  display: "grid",
+  gridTemplateColumns: "repeat(3,1fr)",
+  gap: 20,
+};
+
+const galleryItem = {
+  height: 250,
+  background:
+    "url(https://images.unsplash.com/photo-1501004318641-b39e6451bec6) center/cover",
 };
 
 const contact = {
-  padding: "60px 20px",
-  background: "#065f46",
-  color: "white",
-  textAlign: "center",
+  padding: 80,
+  display: "flex",
+  justifyContent: "center",
+};
+
+const form = {
+  background: "white",
+  padding: 30,
+  borderRadius: 12,
+  width: 400,
 };
 
 const input = {
   width: "100%",
   padding: 10,
   marginBottom: 10,
-  borderRadius: 6,
-  border: "none",
-};
-
-const ctaWhite = {
-  display: "inline-block",
-  background: "white",
-  color: "#065f46",
-  padding: "12px 18px",
-  borderRadius: 8,
-};
-
-const socials = {
-  display: "flex",
-  justifyContent: "center",
-  gap: 20,
-  marginTop: 20,
 };
 
 const footer = {
-  background: "#022c22",
+  background: "#1b5e20",
   color: "white",
   padding: 40,
 };
